@@ -276,4 +276,10 @@ issues:
     issueTitle: "unequalRegion"
     message: "Database and WebApplication not in the same region"
     relations:
-      affects_component: UserDataTable, AmazonRDS, WebApp, Apache2, WebAppServer, Instance2-WebApp
+      affects_component:
+        - UserDataTable
+        - AmazonRDS
+        - WebApp
+        - Apache2
+        - WebAppServer
+        - Instance2-WebApp

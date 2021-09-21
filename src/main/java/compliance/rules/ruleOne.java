@@ -27,10 +27,12 @@ import io.github.edmm.core.parser.ScalarEntity;
 import io.github.edmm.core.parser.SequenceEntity;
 // import io.github.edmm.core.yaml;
 
+import io.kubernetes.client.JSON;
 import javassist.tools.rmi.ObjectNotFoundException;
 import org.json.*;
 
 import java.io.IOException;
+import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
@@ -45,62 +47,41 @@ import java.util.Objects;
 // this rule detects applicability and evaluates CR 1
 public class ruleOne {
     String instanceModelPath = "src/main/java/compliance/instanceModel/motivating-scenario-1.json";
-    String iedmmPath = "src/main/java/compliance/instanceModel/motivating-scenario-1-iedmm.json";
-    String model;
+    String iedmmPath = "src/main/java/compliance/instanceModel/";
+    String dbKey;
+    String webAppKey;
 
     ruleOne() {
         this.instanceModelPath = instanceModelPath;
         this.iedmmPath = iedmmPath;
     }
 
-    public static void printJSON(JSONObject jsonObj) {
-        //Iterating Key Set
-        for (Object keyObj : jsonObj.keySet()) {
-            String key = (String) keyObj;
-            Object valObj = jsonObj.get(key);
-            //If next entry is Object
-            if (valObj instanceof JSONObject) {
-                // call printJSON on nested object
-                printJSON((JSONObject) valObj);
-            }
-            //iff next entry is nested Array
-            else if (valObj instanceof JSONArray) {
-                System.out.println("NestedArraykey : " + key);
-                printJSONArray((JSONArray) valObj);
-
-            } else {
-                System.out.println("key : " + key);
-                System.out.println("value : " + valObj.toString());
-            }
-        }
-    }
-
-    public static void printJSONArray(JSONArray jarray) {
-        //Get Object from Array
-        for (int i = 0; i < jarray.length(); i++) {
-            printJSON(jarray.getJSONObject(i));
-        }
-
-    }
-
-    public static void main(String[] args) throws ObjectNotFoundException {
+    public static void main(String[] args) throws ObjectNotFoundException, IOException {
         ruleOne item = new ruleOne();
-        String currentInstanceModel = item.getInstance(item.instanceModelPath);
+        JSONObject currentInstanceModel = item.getInstance(item.instanceModelPath);
+        // System.out.println(currentInstanceModel);
+
         System.out.println(item.detectRule(currentInstanceModel));
-        // System.out.println(item.evaluateRule(currentInstanceModel));
+        JSONObject evaluationResult = item.evaluateRule(currentInstanceModel);
+        System.out.println(evaluationResult);
+        JSONObject iedmm = item.annotateModel(evaluationResult, currentInstanceModel);
+        item.saveToFile(iedmm, item.iedmmPath, "motivating-scenario-1-iedmm", ".json");
+
     }
 
-    String getInstance(String Path) {
+    /* gets an instance model from a JSON file at a provided path */
+    JSONObject getInstance(String Path) {
         try {
-            this.model = new String(Files.readAllBytes(Paths.get(Path)));
+            String stringModel = new String(Files.readAllBytes(Paths.get(Path)));
+            return new JSONObject(stringModel);
         } catch (IOException e) {
             e.printStackTrace();
-            this.model = "Error";
+            return new JSONObject("Error", "Couldn't get instance model");
         }
-        return this.model;
     }
 
     /* ASSUMPTION: region property is always stored in the BOTTOM-MOST component */
+    /* Helper method to get bottom-most component of a provided stack */
     JSONObject findLastComponent(String componentKey, JSONObject components) {
         String nextKey = "";
         try {
@@ -121,15 +102,10 @@ public class ruleOne {
     }
 
 
-    boolean detectRule(String instanceModel) throws ObjectNotFoundException {
+    /* detects whether evaluation for CR 1 has to be executed, i.e. if rule applies to instance model */
+    boolean detectRule(JSONObject instanceModel) throws ObjectNotFoundException {
         boolean status = false;
-        JSONObject obj = new JSONObject(instanceModel);
-        JSONObject components = obj.getJSONObject("components");
-        JSONObject componentTypes = obj.getJSONObject("component_types");
-        JSONObject relationTypes = obj.getJSONObject("relation_types");
-
-        // JSONObject bottomMostObject = findLastComponent("UserDataTable", components);
-        // System.out.println(bottomMostObject.toString());
+        JSONObject components = instanceModel.getJSONObject("components");
         Iterator<?> keys = components.keySet().iterator();
         /* iterate through all components in instance model */
         while (keys.hasNext()) {
@@ -146,36 +122,97 @@ public class ruleOne {
                         String connectedComponentType = components.getJSONObject(connectedComponent).getString("type");
                         /* check whether the component that the WebApplication connects to is a database type component */
                         if (connectedComponentType.equals("RelationalDB") || connectedComponentType.equals("Database")) {
-                            String regionWebApplication = "";
-                            String regionDatabase = "";
-                            JSONObject bottomMostDBObject = findLastComponent(connectedComponent, components);
-                            JSONObject bottomMostWebAppObject = findLastComponent(currentKey, components);
-                            regionWebApplication = bottomMostWebAppObject.getJSONObject("properties").getString("region");
-                            regionDatabase = bottomMostDBObject.getJSONObject("properties").getString("region");
-                            return regionDatabase.equals(regionWebApplication);
+                            dbKey = connectedComponent;
+                            webAppKey = currentKey;
+                            status = true;
                         }
-                        // System.out.println("WebApplication name: " + currentKey + "and connected component name: " + connectedComponent + " and type: " + connectedComponentType);
                     }
-
                 }
             }
-
         }
-        throw new ObjectNotFoundException("Couldn't decide rule applicability");
-
+        if (status == true) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
-    void evaluateRule(String instanceModel) {
-        JSONObject obj = new JSONObject(instanceModel);
-        JSONArray relations = obj.getJSONObject("components").getJSONObject("PrivateInternalApp").getJSONArray("relations");
-        for (int i = 0; i < relations.length(); i++) {
-            String relation = relations.getJSONObject(i).getString("hosted_on");
-            System.out.println(relation);
+    /* evaluates whether CR 1 (WebApp and DB have same region) is fulfilled or not */
+    JSONObject evaluateRule(JSONObject instanceModel) {
+        JSONObject components = instanceModel.getJSONObject("components");
+        String regionWebApplication = "";
+        String regionDatabase = "";
+        /* get the bottom-most components in each stack */
+        JSONObject bottomMostDBObject = findLastComponent(dbKey, components);
+        JSONObject bottomMostWebAppObject = findLastComponent(webAppKey, components);
+        /* get the region of bottom-most components */
+        regionWebApplication = bottomMostWebAppObject.getJSONObject("properties").getString("region");
+        regionDatabase = bottomMostDBObject.getJSONObject("properties").getString("region");
+        /* compare the regions */
+        boolean equality = regionDatabase.equals(regionWebApplication);
+        if (equality == true) {
+            JSONObject result = new JSONObject();
+            result.put("rule OK with ID", "CR 1");
+            return result;
+        } else {
+            /* construct and return issue */
+            JSONObject issue = new JSONObject();
+            JSONArray affects_component = new JSONArray();
+            JSONObject compositeIssue = new JSONObject();
+            affects_component.put("UserDataTable");
+            affects_component.put("AmazonRDS");
+            affects_component.put("WebApp");
+            affects_component.put("Apache2");
+            affects_component.put("WebAppServer");
+            affects_component.put("Instance2-WebApp");
+            compositeIssue.put("ruleId", "CR 1");
+            compositeIssue.put("issueTitle", "unequalRegion");
+            compositeIssue.put("message", "Database and WebApplication not in the same region");
+            compositeIssue.put("relations", affects_component);
+            issue.put("unequalRegion", compositeIssue);
+            return issue;
         }
-        // System.out.println(obj);
-        String privateApp = obj.getJSONObject("components").getJSONObject("PrivateInternalApp").getJSONObject("properties").getString("isPrivate");
-        System.out.println(privateApp);
+    }
 
+    /* annotates a provided instance model with provided issue */
+    JSONObject annotateModel(JSONObject issue, JSONObject instanceModel) {
+        instanceModel.put("issues", issue);
+        JSONObject issueTypes = new JSONObject();
+        JSONObject baseIssue = new JSONObject();
+        JSONObject complianceIssue = new JSONObject();
+        JSONObject baseProperties = new JSONObject();
+        complianceIssue.put("extends", "base");
+        baseProperties.put("ruleId", "string");
+        baseProperties.put("message", "string");
+        baseIssue.put("extends", "null");
+        baseIssue.put("properties", baseProperties);
+        issueTypes.put("base_issue", baseIssue);
+        issueTypes.put("compliance_issue", complianceIssue);
+        instanceModel.put("issue_types", issueTypes);
+        return instanceModel;
+    }
 
+    /* saves a JSON object to a file at a provided location*/
+    void saveToFile(JSONObject contents, String path, String filename, String fileEnding) throws IOException {
+        try {
+            String destination = path + filename + fileEnding;
+            if (Files.notExists(Paths.get(destination))) {
+                Files.createFile(Paths.get(destination));
+                Files.write(Paths.get(destination), contents.toString(4).getBytes());
+            } else {
+                String newDestination = path + filename + fileEnding;
+                int ctr = 0;
+                while (!Files.notExists(Paths.get(newDestination))) {
+                    ctr = ++ctr;
+                    newDestination = path + filename + ctr + fileEnding;
+                }
+                Files.createFile(Paths.get(newDestination));
+                Files.write(Paths.get(newDestination), contents.toString(4).getBytes());
+                System.out.println("File already existed! Written to " + newDestination);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
