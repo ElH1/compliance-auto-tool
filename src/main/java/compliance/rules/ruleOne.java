@@ -1,4 +1,5 @@
-/* ADD COPYRIGHT DISCLAIMER */
+/* TODO: ADD COPYRIGHT DISCLAIMER */
+/* TODO: ADD GETTERS AND SETTERS */
 
 package compliance.rules;
 
@@ -40,37 +41,23 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Objects;
 
-// yaml example instance model:
-// https://github.com/UST-EDMM/edmm/blob/master/edmm-core/src/test/resources/templates/scenario_iaas.yml
 
-
-// this rule detects applicability and evaluates CR 1
+/**
+ *
+ */
+/* this rule detects applicability of and evaluates CR 1 */
 public class ruleOne {
-    String instanceModelPath = "src/main/java/compliance/instanceModel/motivating-scenario-1.json";
-    String iedmmPath = "src/main/java/compliance/instanceModel/";
+    public String instanceModelPath = "src/main/java/compliance/instanceModel/motivating-scenario-1.json";
+    public String iedmmPath = "src/main/java/compliance/instanceModel/";
     String dbKey;
     String webAppKey;
 
-    ruleOne() {
-        this.instanceModelPath = instanceModelPath;
-        this.iedmmPath = iedmmPath;
-    }
-
-    public static void main(String[] args) throws ObjectNotFoundException, IOException {
-        ruleOne item = new ruleOne();
-        JSONObject currentInstanceModel = item.getInstance(item.instanceModelPath);
-        // System.out.println(currentInstanceModel);
-
-        System.out.println(item.detectRule(currentInstanceModel));
-        JSONObject evaluationResult = item.evaluateRule(currentInstanceModel);
-        System.out.println(evaluationResult);
-        JSONObject iedmm = item.annotateModel(evaluationResult, currentInstanceModel);
-        item.saveToFile(iedmm, item.iedmmPath, "motivating-scenario-1-iedmm", ".json");
-
-    }
-
+    /**
+     * @param Path
+     * @return
+     */
     /* gets an instance model from a JSON file at a provided path */
-    JSONObject getInstance(String Path) {
+    public JSONObject getInstance(String Path) {
         try {
             String stringModel = new String(Files.readAllBytes(Paths.get(Path)));
             return new JSONObject(stringModel);
@@ -80,6 +67,11 @@ public class ruleOne {
         }
     }
 
+    /**
+     * @param componentKey
+     * @param components
+     * @return
+     */
     /* ASSUMPTION: region property is always stored in the BOTTOM-MOST component */
     /* Helper method to get bottom-most component of a provided stack */
     JSONObject findLastComponent(String componentKey, JSONObject components) {
@@ -96,52 +88,62 @@ public class ruleOne {
             }
             return findLastComponent(nextKey, components);
         } catch (Exception e) {
-
+            // catches and ignores when a requested key doesn't exist.
         }
         return components.getJSONObject(componentKey);
     }
 
 
+    /**
+     * @param instanceModel
+     * @return
+     * @throws ObjectNotFoundException
+     */
     /* detects whether evaluation for CR 1 has to be executed, i.e. if rule applies to instance model */
-    boolean detectRule(JSONObject instanceModel) throws ObjectNotFoundException {
-        boolean status = false;
-        JSONObject components = instanceModel.getJSONObject("components");
-        Iterator<?> keys = components.keySet().iterator();
-        /* iterate through all components in instance model */
-        while (keys.hasNext()) {
-            String currentKey = (String) keys.next();
-            JSONObject currentComponent = components.getJSONObject(currentKey);
-            String componentType = currentComponent.getString("type");
-            /* check if the component is of type WebApplication */
-            if (componentType.equals("WebApplication")) {
-                JSONArray relations = components.getJSONObject(currentKey).getJSONArray("relations");
-                for (int i = 0; i < relations.length(); i++) {
-                    /* check if the component of type WebApplication connects to any other components */
-                    if (relations.getJSONObject(i).toString().contains("connects_to")) {
-                        String connectedComponent = relations.getJSONObject(i).getString("connects_to");
-                        String connectedComponentType = components.getJSONObject(connectedComponent).getString("type");
-                        /* check whether the component that the WebApplication connects to is a database type component */
-                        if (connectedComponentType.equals("RelationalDB") || connectedComponentType.equals("Database")) {
-                            dbKey = connectedComponent;
-                            webAppKey = currentKey;
-                            status = true;
+    public boolean detectRule(JSONObject instanceModel) throws ObjectNotFoundException {
+        try {
+            boolean status = false;
+            JSONObject components = instanceModel.getJSONObject("components");
+            Iterator<?> keys = components.keySet().iterator();
+            /* iterate through all components in instance model */
+            while (keys.hasNext()) {
+                String currentKey = (String) keys.next();
+                JSONObject currentComponent = components.getJSONObject(currentKey);
+                String componentType = currentComponent.getString("type");
+                /* check if the component is of type WebApplication */
+                if (componentType.equals("WebApplication")) {
+                    JSONArray relations = components.getJSONObject(currentKey).getJSONArray("relations");
+                    for (int i = 0; i < relations.length(); i++) {
+                        /* check if the component of type WebApplication connects to any other components */
+                        if (relations.getJSONObject(i).toString().contains("connects_to")) {
+                            String connectedComponent = relations.getJSONObject(i).getString("connects_to");
+                            String connectedComponentType = components.getJSONObject(connectedComponent).getString("type");
+                            /* check whether the component that the WebApplication connects to is a database type component */
+                            if (connectedComponentType.equals("RelationalDB") || connectedComponentType.equals("Database")) {
+                                dbKey = connectedComponent;
+                                webAppKey = currentKey;
+                                status = true;
+                            }
                         }
                     }
                 }
             }
-        }
-        if (status == true) {
-            return true;
-        } else {
-            return false;
+            return status;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new ObjectNotFoundException("Object wasn't found");
         }
     }
 
+    /**
+     * @param instanceModel
+     * @return
+     */
     /* evaluates whether CR 1 (WebApp and DB have same region) is fulfilled or not */
-    JSONObject evaluateRule(JSONObject instanceModel) {
+    public JSONObject evaluateRule(JSONObject instanceModel) {
         JSONObject components = instanceModel.getJSONObject("components");
-        String regionWebApplication = "";
-        String regionDatabase = "";
+        String regionWebApplication;
+        String regionDatabase;
         /* get the bottom-most components in each stack */
         JSONObject bottomMostDBObject = findLastComponent(dbKey, components);
         JSONObject bottomMostWebAppObject = findLastComponent(webAppKey, components);
@@ -150,7 +152,7 @@ public class ruleOne {
         regionDatabase = bottomMostDBObject.getJSONObject("properties").getString("region");
         /* compare the regions */
         boolean equality = regionDatabase.equals(regionWebApplication);
-        if (equality == true) {
+        if (equality) {
             JSONObject result = new JSONObject();
             result.put("rule OK with ID", "CR 1");
             return result;
@@ -174,8 +176,13 @@ public class ruleOne {
         }
     }
 
+    /**
+     * @param issue
+     * @param instanceModel
+     * @return
+     */
     /* annotates a provided instance model with provided issue */
-    JSONObject annotateModel(JSONObject issue, JSONObject instanceModel) {
+    public JSONObject annotateModel(JSONObject issue, JSONObject instanceModel) {
         instanceModel.put("issues", issue);
         JSONObject issueTypes = new JSONObject();
         JSONObject baseIssue = new JSONObject();
@@ -192,8 +199,15 @@ public class ruleOne {
         return instanceModel;
     }
 
+    /**
+     * @param contents
+     * @param path
+     * @param filename
+     * @param fileEnding
+     * @throws IOException
+     */
     /* saves a JSON object to a file at a provided location*/
-    void saveToFile(JSONObject contents, String path, String filename, String fileEnding) throws IOException {
+    public void saveToFile(JSONObject contents, String path, String filename, String fileEnding) throws IOException {
         try {
             String destination = path + filename + fileEnding;
             if (Files.notExists(Paths.get(destination))) {
@@ -203,7 +217,7 @@ public class ruleOne {
                 String newDestination = path + filename + fileEnding;
                 int ctr = 0;
                 while (!Files.notExists(Paths.get(newDestination))) {
-                    ctr = ++ctr;
+                    ++ctr;
                     newDestination = path + filename + ctr + fileEnding;
                 }
                 Files.createFile(Paths.get(newDestination));
@@ -213,6 +227,8 @@ public class ruleOne {
 
         } catch (Exception e) {
             e.printStackTrace();
+            throw new IOException("Something unexpected went wrong.");
         }
+
     }
 }
