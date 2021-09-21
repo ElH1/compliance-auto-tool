@@ -1,0 +1,18 @@
+{
+  "type": "programmeBased",
+  "ruleID": "CR1",
+  "content": {
+    "detector": {
+      "location": "./ruleOne.java",
+      "method": "detect(model)",
+      "command": "export model=../instance-model/motivating-scenario-1.jsonjavac ruleOne.javajava ruleOne.detect($model)"
+    },
+    "evaluator": {
+      "location": "./ruleOne.java",
+      "method": "evaluate(model)",
+      "command": "export model=../instance-model/motivating-scenario-1.jsonjavac ruleOne.javajava ruleOne.evaluate($model)",
+      "issueTitle": "unequalRegion",
+      "message": "database and web application are not hosted on the same region"
+    }
+  }
+}

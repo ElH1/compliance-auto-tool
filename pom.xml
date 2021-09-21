@@ -23,11 +23,13 @@
     <dependencies>
         <dependency>
             <groupId>com.github.UST-EDMM.edmm</groupId>
-            <artifactId>cfn-builder</artifactId>
+            <artifactId>edmm-core</artifactId>
             <version>v1.0.18</version>
         </dependency>
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20210307</version>
+        </dependency>
     </dependencies>
-
-
-
 </project>
