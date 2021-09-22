@@ -1,3 +1,6 @@
+/* Copyright IBM 2021 under Apache 2.0 license */
+/* Author: Elena Heldwein */
+
 package com.company;
 
 import compliance.rules.ruleOne;

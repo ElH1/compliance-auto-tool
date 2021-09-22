@@ -1,45 +1,43 @@
-/* TODO: ADD COPYRIGHT DISCLAIMER */
+/* Copyright IBM 2021 under Apache 2.0 license */
+/* Author: Elena Heldwein */
+
 /* TODO: ADD GETTERS AND SETTERS */
 
 package compliance.rules;
 
-// EDMM MODEL ENTITIES --> stored for future use, not relevant to current implementation
+/*
+ * // EDMM MODEL ENTITIES --> stored for future use, not relevant to current implementation
+ * import io.github.edmm.model.DeploymentModel;
+ * import io.github.edmm.model.component.Compute;
+ * import io.github.edmm.model.component.Mom;
+ * import io.github.edmm.model.component.Database;
+ * import io.github.edmm.model.component.Dbaas;
+ * import io.github.edmm.model.component.Paas;
+ * import io.github.edmm.model.component.RootComponent;
+ * import io.github.edmm.model.component.SoftwareComponent;
+ * import io.github.edmm.model.component.WebApplication;
+ * import io.github.edmm.model.component.WebServer;
+ * import io.github.edmm.model.relation.RootRelation;
+ * import io.github.edmm.model.relation.ConnectsTo;
+ * import io.github.edmm.model.relation.HostedOn;
+ *
+ * // PARSER
+ * import io.github.edmm.core.parser.Entity;
+ * import io.github.edmm.core.parser.EntityGraph;
+ * import io.github.edmm.core.parser.EntityId;
+ * import io.github.edmm.core.parser.MappingEntity;
+ * import io.github.edmm.core.parser.ScalarEntity;
+ * import io.github.edmm.core.parser.SequenceEntity;
+ * import io.github.edmm.core.yaml;
+ */
 
-import io.github.edmm.model.DeploymentModel;
-import io.github.edmm.model.component.Compute;
-import io.github.edmm.model.component.Mom;
-import io.github.edmm.model.component.Database;
-import io.github.edmm.model.component.Dbaas;
-import io.github.edmm.model.component.Paas;
-import io.github.edmm.model.component.RootComponent;
-import io.github.edmm.model.component.SoftwareComponent;
-import io.github.edmm.model.component.WebApplication;
-import io.github.edmm.model.component.WebServer;
-import io.github.edmm.model.relation.RootRelation;
-import io.github.edmm.model.relation.ConnectsTo;
-import io.github.edmm.model.relation.HostedOn;
-
-// PARSER
-import io.github.edmm.core.parser.Entity;
-import io.github.edmm.core.parser.EntityGraph;
-import io.github.edmm.core.parser.EntityId;
-import io.github.edmm.core.parser.MappingEntity;
-import io.github.edmm.core.parser.ScalarEntity;
-import io.github.edmm.core.parser.SequenceEntity;
-// import io.github.edmm.core.yaml;
-
-import io.kubernetes.client.JSON;
 import javassist.tools.rmi.ObjectNotFoundException;
 import org.json.*;
 
 import java.io.IOException;
-import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Iterator;
-import java.util.Objects;
 
 
 /**
