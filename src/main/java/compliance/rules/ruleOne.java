@@ -117,7 +117,7 @@ public class ruleOne {
                             String connectedComponent = relations.getJSONObject(i).getString("connects_to");
                             String connectedComponentType = components.getJSONObject(connectedComponent).getString("type");
                             /* check whether the component that the WebApplication connects to is a database type component */
-                            if (connectedComponentType.equals("RelationalDB") || connectedComponentType.equals("Database")) {
+                            if (connectedComponentType.equals("RelationalDB") || connectedComponentType.equals("database")) {
                                 dbKey = connectedComponent;
                                 webAppKey = currentKey;
                                 status = true;
