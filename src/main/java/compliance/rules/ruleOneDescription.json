@@ -3,16 +3,13 @@
   "ruleID": "CR1",
   "content": {
     "detector": {
-      "location": "./ruleOne.java",
-      "method": "detect(model)",
-      "command": "export model=../instance-model/motivating-scenario-1.jsonjavac ruleOne.javajava ruleOne.detect($model)"
+      "location": "https://github.com/ElH1/masterthesis-prototype/blob/master/src/main/java/compliance/rules/ruleOne.java",
+      "command": "javac ruleOne.java && java ruleOne.detect($LocationOfInstanceModel)"
     },
     "evaluator": {
-      "location": "./ruleOne.java",
-      "method": "evaluate(model)",
-      "command": "export model=../instance-model/motivating-scenario-1.jsonjavac ruleOne.javajava ruleOne.evaluate($model)",
-      "issueTitle": "unequalRegion",
-      "message": "database and web application are not hosted on the same region"
+      "location": "https://github.com/ElH1/masterthesis-prototype/blob/master/src/main/java/compliance/rules/ruleOne.java",
+      "command": "javac ruleOne.java && java ruleOne.evaluate($LocationOfInstanceModel)",
+      "issueTitle": "unequalRegion"
     }
   }
 }

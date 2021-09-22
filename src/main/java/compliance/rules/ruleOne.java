@@ -159,6 +159,7 @@ public class ruleOne {
             JSONObject issue = new JSONObject();
             JSONArray affects_component = new JSONArray();
             JSONObject compositeIssue = new JSONObject();
+            JSONObject affects = new JSONObject();
             affects_component.put("UserDataTable");
             affects_component.put("AmazonRDS");
             affects_component.put("WebApp");
@@ -168,7 +169,8 @@ public class ruleOne {
             compositeIssue.put("ruleId", "CR 1");
             compositeIssue.put("issueTitle", "unequalRegion");
             compositeIssue.put("message", "Database and WebApplication not in the same region");
-            compositeIssue.put("relations", affects_component);
+            affects.put("affects", affects_component);
+            compositeIssue.put("relations", affects);
             issue.put("unequalRegion", compositeIssue);
             return issue;
         }
@@ -182,6 +184,10 @@ public class ruleOne {
     /* annotates a provided instance model with provided issue */
     public JSONObject annotateModel(JSONObject issue, JSONObject instanceModel) {
         instanceModel.put("issues", issue);
+        JSONObject affectsRelationType = new JSONObject();
+        affectsRelationType.put("extends", "null");
+        affectsRelationType.put("properties", "");
+        instanceModel.getJSONObject("relation_types").put("affects", affectsRelationType);
         JSONObject issueTypes = new JSONObject();
         JSONObject baseIssue = new JSONObject();
         JSONObject complianceIssue = new JSONObject();

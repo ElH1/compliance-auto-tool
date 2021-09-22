@@ -108,6 +108,10 @@
             "extends": null,
             "properties": {}
         },
+        "affects": {
+            "extends": "null",
+            "properties": ""
+        },
         "hosted_on": {"extends": "depends_on"},
         "connects_to": {"extends": "depends_on"}
     },
@@ -193,13 +197,13 @@
         "issueTitle": "unequalRegion",
         "ruleId": "CR 1",
         "message": "Database and WebApplication not in the same region",
-        "relations": [
+        "relations": {"affects": [
             "UserDataTable",
             "AmazonRDS",
             "WebApp",
             "Apache2",
             "WebAppServer",
             "Instance2-WebApp"
-        ]
+        ]}
     }}
 }
