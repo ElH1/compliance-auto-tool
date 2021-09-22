@@ -16,12 +16,10 @@ public class Main {
     public static void main(String[] args) throws ObjectNotFoundException, IOException {
         ruleOne item = new ruleOne();
         JSONObject currentInstanceModel = item.getInstance(item.instanceModelPath);
-        // System.out.println(currentInstanceModel);
-
-        System.out.println(item.detectRule(currentInstanceModel));
-        JSONObject evaluationResult = item.evaluateRule(currentInstanceModel);
-        System.out.println(evaluationResult);
-        JSONObject iedmm = item.annotateModel(evaluationResult, currentInstanceModel);
-        item.saveToFile(iedmm, item.iedmmPath, "motivating-scenario-1-iedmm", ".json");
+        if (item.detectRule(currentInstanceModel)) {
+            JSONObject evaluationResult = item.evaluateRule(currentInstanceModel);
+            JSONObject iedmm = item.annotateModel(evaluationResult, currentInstanceModel);
+            item.saveToFile(iedmm, item.iedmmPath, "motivating-scenario-1-iedmm", ".json");
+        }
     }
 }
