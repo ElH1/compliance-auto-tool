@@ -139,40 +139,45 @@ public class ruleOne {
      */
     /* evaluates whether CR 1 (WebApp and DB have same region) is fulfilled or not */
     public JSONObject evaluateRule(JSONObject instanceModel) {
-        JSONObject components = instanceModel.getJSONObject("components");
-        String regionWebApplication;
-        String regionDatabase;
-        /* get the bottom-most components in each stack */
-        JSONObject bottomMostDBObject = findLastComponent(dbKey, components);
-        JSONObject bottomMostWebAppObject = findLastComponent(webAppKey, components);
-        /* get the region of bottom-most components */
-        regionWebApplication = bottomMostWebAppObject.getJSONObject("properties").getString("region");
-        regionDatabase = bottomMostDBObject.getJSONObject("properties").getString("region");
-        /* compare the regions */
-        boolean equality = regionDatabase.equals(regionWebApplication);
-        if (equality) {
-            JSONObject result = new JSONObject();
-            result.put("rule OK with ID", "CR 1");
-            return result;
-        } else {
-            /* construct and return issue */
-            JSONObject issue = new JSONObject();
-            JSONArray affects_component = new JSONArray();
-            JSONObject compositeIssue = new JSONObject();
-            JSONObject affects = new JSONObject();
-            affects_component.put("UserDataTable");
-            affects_component.put("AmazonRDS");
-            affects_component.put("WebApp");
-            affects_component.put("Apache2");
-            affects_component.put("WebAppServer");
-            affects_component.put("Instance2-WebApp");
-            compositeIssue.put("ruleId", "CR 1");
-            compositeIssue.put("issueTitle", "unequalRegion");
-            compositeIssue.put("message", "Database and WebApplication not in the same region");
-            affects.put("affects", affects_component);
-            compositeIssue.put("relations", affects);
-            issue.put("unequalRegion", compositeIssue);
-            return issue;
+        try {
+            JSONObject components = instanceModel.getJSONObject("components");
+            String regionWebApplication;
+            String regionDatabase;
+            /* get the bottom-most components in each stack */
+            JSONObject bottomMostDBObject = findLastComponent(dbKey, components);
+            JSONObject bottomMostWebAppObject = findLastComponent(webAppKey, components);
+            /* get the region of bottom-most components */
+            regionWebApplication = bottomMostWebAppObject.getJSONObject("properties").getString("region");
+            regionDatabase = bottomMostDBObject.getJSONObject("properties").getString("region");
+            /* compare the regions */
+            boolean equality = regionDatabase.equals(regionWebApplication);
+            if (equality) {
+                JSONObject result = new JSONObject();
+                result.put("rule OK with ID", "CR 1");
+                return result;
+            } else {
+                /* construct and return issue */
+                JSONObject issue = new JSONObject();
+                JSONArray affects_component = new JSONArray();
+                JSONObject compositeIssue = new JSONObject();
+                JSONObject affects = new JSONObject();
+                affects_component.put("UserDataTable");
+                affects_component.put("AmazonRDS");
+                affects_component.put("WebApp");
+                affects_component.put("Apache2");
+                affects_component.put("WebAppServer");
+                affects_component.put("Instance2-WebApp");
+                compositeIssue.put("ruleId", "CR 1");
+                compositeIssue.put("issueTitle", "unequalRegion");
+                compositeIssue.put("message", "Database and WebApplication not in the same region");
+                affects.put("affects", affects_component);
+                compositeIssue.put("relations", affects);
+                issue.put("unequalRegion", compositeIssue);
+                return issue;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
         }
     }
 
