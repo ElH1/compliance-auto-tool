@@ -50,6 +50,17 @@ public class ruleOne {
     String dbKey;
     String webAppKey;
 
+    public static void main(String[] args) throws ObjectNotFoundException, IOException {
+        System.out.println("main executed.");
+        ruleOne item = new ruleOne();
+        JSONObject currentInstanceModel = item.getInstance(item.instanceModelPath);
+        if (item.detectRule(currentInstanceModel)) {
+            JSONObject evaluationResult = item.evaluateRule(currentInstanceModel);
+            JSONObject iedmm = item.annotateModel(evaluationResult, currentInstanceModel);
+            item.saveToFile(iedmm, item.iedmmPath, "motivating-scenario-1-iedmm", ".json");
+        }
+    }
+
     /**
      * @param Path
      * @return
@@ -91,7 +102,6 @@ public class ruleOne {
         return components.getJSONObject(componentKey);
     }
 
-
     /**
      * @param instanceModel
      * @return
@@ -126,6 +136,7 @@ public class ruleOne {
                     }
                 }
             }
+            System.out.println("ruleOne detector result: " + status);
             return status;
         } catch (Exception e) {
             e.printStackTrace();
@@ -239,5 +250,9 @@ public class ruleOne {
             throw new IOException("Something unexpected went wrong.");
         }
 
+    }
+
+    public void dummy() {
+        System.out.println("dummy method called");
     }
 }
