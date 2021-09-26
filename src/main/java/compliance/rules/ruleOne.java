@@ -47,19 +47,8 @@ import java.util.Iterator;
 public class ruleOne {
     public String instanceModelPath = "src/main/java/compliance/instanceModel/motivating-scenario-1.json";
     public String iedmmPath = "src/main/java/compliance/instanceModel/";
-    String dbKey;
-    String webAppKey;
 
-    public static void main(String[] args) throws ObjectNotFoundException, IOException {
-        System.out.println("main executed.");
-        ruleOne item = new ruleOne();
-        JSONObject currentInstanceModel = item.getInstance(item.instanceModelPath);
-        if (item.detectRule(currentInstanceModel)) {
-            JSONObject evaluationResult = item.evaluateRule(currentInstanceModel);
-            JSONObject iedmm = item.annotateModel(evaluationResult, currentInstanceModel);
-            item.saveToFile(iedmm, item.iedmmPath, "motivating-scenario-1-iedmm", ".json");
-        }
-    }
+    String[] affectedComponents = {};
 
     /**
      * @param Path
@@ -108,7 +97,7 @@ public class ruleOne {
      * @throws ObjectNotFoundException
      */
     /* detects whether evaluation for CR 1 has to be executed, i.e. if rule applies to instance model */
-    public boolean detectRule(JSONObject instanceModel) throws ObjectNotFoundException {
+    public boolean detectRule(JSONObject instanceModel, String transferPath) throws ObjectNotFoundException {
         try {
             boolean status = false;
             JSONObject components = instanceModel.getJSONObject("components");
@@ -128,15 +117,14 @@ public class ruleOne {
                             String connectedComponentType = components.getJSONObject(connectedComponent).getString("type");
                             /* check whether the component that the WebApplication connects to is a database type component */
                             if (connectedComponentType.equals("RelationalDB") || connectedComponentType.equals("database")) {
-                                dbKey = connectedComponent;
-                                webAppKey = currentKey;
+                                // dbKey = connectedComponent;
+                                // webAppKey = currentKey;
                                 status = true;
                             }
                         }
                     }
                 }
             }
-            System.out.println("ruleOne detector result: " + status);
             return status;
         } catch (Exception e) {
             e.printStackTrace();
@@ -149,11 +137,38 @@ public class ruleOne {
      * @return
      */
     /* evaluates whether CR 1 (WebApp and DB have same region) is fulfilled or not */
-    public JSONObject evaluateRule(JSONObject instanceModel) {
+    public JSONObject evaluateRule(JSONObject instanceModel, String transferPath) {
         try {
             JSONObject components = instanceModel.getJSONObject("components");
             String regionWebApplication;
             String regionDatabase;
+            String dbKey = "";
+            String webAppKey = "";
+
+            /* Retrieve affected components + starting points for traversal */
+            Iterator<?> keys = components.keySet().iterator();
+            while (keys.hasNext()) {
+                String currentKey = (String) keys.next();
+                JSONObject currentComponent = components.getJSONObject(currentKey);
+                String componentType = currentComponent.getString("type");
+                /* check if the component is of type WebApplication */
+                if (componentType.equals("WebApplication")) {
+                    JSONArray relations = components.getJSONObject(currentKey).getJSONArray("relations");
+                    for (int i = 0; i < relations.length(); i++) {
+                        /* check if the component of type WebApplication connects to any other components */
+                        if (relations.getJSONObject(i).toString().contains("connects_to")) {
+                            String connectedComponent = relations.getJSONObject(i).getString("connects_to");
+                            String connectedComponentType = components.getJSONObject(connectedComponent).getString("type");
+                            /* check whether the component that the WebApplication connects to is a database type component */
+                            if (connectedComponentType.equals("RelationalDB") || connectedComponentType.equals("database")) {
+                                dbKey = connectedComponent;
+                                webAppKey = currentKey;
+                            }
+                        }
+                    }
+                }
+            }
+
             /* get the bottom-most components in each stack */
             JSONObject bottomMostDBObject = findLastComponent(dbKey, components);
             JSONObject bottomMostWebAppObject = findLastComponent(webAppKey, components);
@@ -172,18 +187,18 @@ public class ruleOne {
                 JSONArray affects_component = new JSONArray();
                 JSONObject compositeIssue = new JSONObject();
                 JSONObject affects = new JSONObject();
-                affects_component.put("UserDataTable");
+                affects_component.put(webAppKey);
+                affects_component.put(dbKey);
+                // figure out how to dynamically capture and set the keys of affected components
                 affects_component.put("AmazonRDS");
-                affects_component.put("WebApp");
-                affects_component.put("Apache2");
-                affects_component.put("WebAppServer");
                 affects_component.put("Instance2-WebApp");
+                
                 compositeIssue.put("ruleId", "CR 1");
-                compositeIssue.put("issueTitle", "unequalRegion");
+                compositeIssue.put("type", "incorrectProperty");
                 compositeIssue.put("message", "Database and WebApplication not in the same region");
                 affects.put("affects", affects_component);
                 compositeIssue.put("relations", affects);
-                issue.put("unequalRegion", compositeIssue);
+                issue.put("incorrectProperty-1", compositeIssue);
                 return issue;
             }
         } catch (Exception e) {

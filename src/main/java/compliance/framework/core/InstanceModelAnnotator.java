@@ -5,17 +5,31 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Iterator;
 
 public class InstanceModelAnnotator {
 
     /**
-     * @param issue
+     * @param issues
      * @param instanceModel
      * @return
      */
     /* annotates a provided instance model with provided issue */
-    public JSONObject annotateModel(JSONObject issue, JSONObject instanceModel) {
-        instanceModel.put("issues", issue);
+    public JSONObject annotateModel(JSONObject[] issues, JSONObject instanceModel) {
+        instanceModel.put("issues", issues[0]);
+        int keyctr = 1;
+        for (int i = 1; i < issues.length; i++) {
+            String key = "";
+            // instanceModel.getJSONObject("issues").put("issue " + i, issues[i]);
+            // instanceModel.put("issues", issues[i]); // this overwrites issues every time
+            Iterator<?> keys = issues[i].keySet().iterator();
+            while (keys.hasNext()) {
+                String currentKey = (String) keys.next();
+                instanceModel.getJSONObject("issues").put(currentKey + "-" + keyctr, issues[i].getJSONObject(currentKey));
+                keyctr++;
+            }
+
+        }
         JSONObject affectsRelationType = new JSONObject();
         affectsRelationType.put("extends", "null");
         affectsRelationType.put("properties", "");
