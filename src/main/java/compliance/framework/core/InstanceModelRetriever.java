@@ -27,6 +27,8 @@ public class InstanceModelRetriever {
         Set edgeset = instanceModel.edgeSet();
         GraphType type = instanceModel.getType();
         Set vertices = instanceModel.vertexSet();
+        String testComponent = instanceModel.getParticipantFromComponentName("PrivateInternalApp");
+        
         // System.out.println("toString: " + instanceModel.toString());
     }
 
