@@ -3,29 +3,19 @@
 
 package compliance.framework.core;
 
-// import compliance.rules.ruleOne;
-
 import javassist.tools.rmi.ObjectNotFoundException;
 import org.json.JSONObject;
 
-// import java.io.File;
 import java.io.IOException;
-// import java.lang.reflect.Method;
-// import java.net.URI;
-// import java.net.URL;
-// import java.net.URLClassLoader;
-// import java.util.Enumeration;
-// import java.util.jar.JarEntry;
-// import java.util.jar.JarFile;
 
 public class Main {
-    // String instanceModelPath = "src/main/java/compliance/instanceModel/motivating-scenario-1.json";
-    // String iedmmPath = "src/main/java/compliance/instanceModel/";
+    // String instanceModelPath = "instanceModels/motivating-scenario-1-noncompliant.json";
+    // String iedmmPath = "instanceModels/iedmm";
 
     /* Arguments when running program:
      * 0. path to instance model file
      * 1. path + file for data transfer between detector & evaluator
-     * 2. name of classpath to rule
+     * 2.-x. name of classpath to rule(s)
      */
     public static void main(String[] args) throws ObjectNotFoundException, IOException, ClassNotFoundException {
         String instanceModelPath = args[0];
@@ -66,42 +56,7 @@ public class Main {
             if (iedmm != null) {
                 annotator.saveToFile(iedmm, "src/main/java/compliance/instanceModel/", "motivating-scenario-1-iedmm", ".json");
             }
-
-
-            // ClassLoader classLoader = Main.class.getClassLoader();
-            // Class[] argclasses = new Class[1];
-            // argclasses[0] = String[].class; // parameterTypes signature to find the correct method, array of the method's parameter types!
-            // String[] argsForRule = new String[1]; // parameters that must be passed to the method being called
-
-
-            // System.out.println(System.getProperties().get("java.class.path"));
-            //
-            // JarFile jarFile = new JarFile("D:\\OneDrive - stud.uni-stuttgart.de\\MSc-Uni-Stuttgart-Main\\Master_thesis\\poc\\compliance-automation-framework\\out\\artifacts\\compliance_automation_framework_jar\\compliance-automation-framework.jar");
-            // Enumeration<JarEntry> a = jarFile.entries();
-            // JarEntry je = null;
-
-
-            // while (a.hasMoreElements()) {
-            //     je = a.nextElement();
-            //     if (je.getName().contains("ruleTwo")) {
-            //         break;
-            //     }
-            //
-            //
-            // }
-
-            // Class aClass = Class.forName(args[2]);
-            // System.out.println(je.toString());
-            // Class aClass = classLoader.loadClass(args[0]);
-            // addPath(args[0]);
-            // System.out.println("aClass.getName() = " + aClass.getName());
-            // Method method = aClass.getMethod("main", argclasses);
-            // Object obj = aClass.getDeclaredConstructor().newInstance();
-            // method.invoke(obj, argsForRule);
-
-            // for (int i = 0; i < args.length; i++) {
-            //     System.out.println("Argument " + i + ": " + args[i]);
-            // }
+            
         } catch (Exception e) {
             e.printStackTrace();
         }

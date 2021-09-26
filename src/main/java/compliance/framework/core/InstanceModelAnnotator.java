@@ -1,3 +1,6 @@
+/* Copyright IBM 2021 under Apache 2.0 license */
+/* Author: Elena Heldwein */
+
 package compliance.framework.core;
 
 import org.json.JSONObject;
@@ -20,8 +23,6 @@ public class InstanceModelAnnotator {
         int keyctr = 1;
         for (int i = 1; i < issues.length; i++) {
             String key = "";
-            // instanceModel.getJSONObject("issues").put("issue " + i, issues[i]);
-            // instanceModel.put("issues", issues[i]); // this overwrites issues every time
             Iterator<?> keys = issues[i].keySet().iterator();
             while (keys.hasNext()) {
                 String currentKey = (String) keys.next();

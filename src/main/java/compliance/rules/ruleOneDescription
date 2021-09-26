@@ -1,0 +1,2 @@
+An example rule description/execution command for a rule in class RuleOne:
+java Main "instanceModels/motivating-scenario-1-noncompliant.json" "dataTransfer/ruleOneDetectorResult" "compliance.rules.ruleOne"

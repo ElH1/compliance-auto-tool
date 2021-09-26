@@ -1,35 +1,7 @@
 /* Copyright IBM 2021 under Apache 2.0 license */
 /* Author: Elena Heldwein */
 
-/* TODO: ADD GETTERS AND SETTERS */
-
 package compliance.rules;
-
-/*
- * // EDMM MODEL ENTITIES --> stored for future use, not relevant to current implementation
- * import io.github.edmm.model.DeploymentModel;
- * import io.github.edmm.model.component.Compute;
- * import io.github.edmm.model.component.Mom;
- * import io.github.edmm.model.component.Database;
- * import io.github.edmm.model.component.Dbaas;
- * import io.github.edmm.model.component.Paas;
- * import io.github.edmm.model.component.RootComponent;
- * import io.github.edmm.model.component.SoftwareComponent;
- * import io.github.edmm.model.component.WebApplication;
- * import io.github.edmm.model.component.WebServer;
- * import io.github.edmm.model.relation.RootRelation;
- * import io.github.edmm.model.relation.ConnectsTo;
- * import io.github.edmm.model.relation.HostedOn;
- *
- * // PARSER
- * import io.github.edmm.core.parser.Entity;
- * import io.github.edmm.core.parser.EntityGraph;
- * import io.github.edmm.core.parser.EntityId;
- * import io.github.edmm.core.parser.MappingEntity;
- * import io.github.edmm.core.parser.ScalarEntity;
- * import io.github.edmm.core.parser.SequenceEntity;
- * import io.github.edmm.core.yaml;
- */
 
 import javassist.tools.rmi.ObjectNotFoundException;
 import org.json.*;
@@ -45,10 +17,8 @@ import java.util.Iterator;
  */
 /* this rule detects applicability of and evaluates CR 1 */
 public class ruleOne {
-    public String instanceModelPath = "src/main/java/compliance/instanceModel/motivating-scenario-1.json";
+    public String instanceModelPath = "src/main/java/compliance/instanceModel/motivating-scenario-1-noncompliant.json";
     public String iedmmPath = "src/main/java/compliance/instanceModel/";
-
-    String[] affectedComponents = {};
 
     /**
      * @param Path
@@ -86,7 +56,7 @@ public class ruleOne {
             }
             return findLastComponent(nextKey, components);
         } catch (Exception e) {
-            // catches and ignores when a requested key doesn't exist.
+            // catches and ignores when a requested key doesn't exist, replace with if x.has(key) above.
         }
         return components.getJSONObject(componentKey);
     }
@@ -192,7 +162,7 @@ public class ruleOne {
                 // figure out how to dynamically capture and set the keys of affected components
                 affects_component.put("AmazonRDS");
                 affects_component.put("Instance2-WebApp");
-                
+
                 compositeIssue.put("ruleId", "CR 1");
                 compositeIssue.put("type", "incorrectProperty");
                 compositeIssue.put("message", "Database and WebApplication not in the same region");
@@ -265,9 +235,5 @@ public class ruleOne {
             throw new IOException("Something unexpected went wrong.");
         }
 
-    }
-
-    public void dummy() {
-        System.out.println("dummy method called");
     }
 }

@@ -9,8 +9,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-import io.github.edmm.core.*;
-
 public class InstanceModelRetriever {
 
     /**
@@ -18,13 +16,13 @@ public class InstanceModelRetriever {
      * @return
      */
     /* gets an instance model from a JSON file at a provided path */
-    public JSONObject getInstance(String path) {
+    public JSONObject getInstance(String path) throws IOException {
         try {
             String stringModel = new String(Files.readAllBytes(Paths.get(path)));
             return new JSONObject(stringModel);
         } catch (IOException e) {
             e.printStackTrace();
-            return new JSONObject("Error", "Couldn't get instance model");
+            throw e;
         }
     }
 
