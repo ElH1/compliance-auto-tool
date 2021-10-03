@@ -11,12 +11,11 @@ import java.lang.reflect.Method;
 public class RuleEvaluator {
 
     /* evaluates whether given rule is fulfilled for given instance model */
-    public JSONObject evaluateRule(JSONObject instanceModel, String classLocation, String transferLocation) throws ClassNotFoundException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+    public JSONObject evaluateRule(JSONObject instanceModel, String classLocation) throws ClassNotFoundException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         try {
             /* set the args to identify the method signature */
-            Class[] argclassesDetector = new Class[2];
+            Class[] argclassesDetector = new Class[1];
             argclassesDetector[0] = JSONObject.class; // parameterTypes signature to find the correct method, array of the method's parameter types
-            argclassesDetector[1] = String.class;
 
             /* get the provided rule's class and evaluation method */
             Class evaluator = Class.forName(classLocation);
@@ -27,7 +26,7 @@ public class RuleEvaluator {
             Object newObject = evaluator.getDeclaredConstructor().newInstance();
 
             /* invoke evaluation method */
-            JSONObject evaluationResult = (JSONObject) evaluate.invoke(newObject, instanceModel, transferLocation); // equal to newObject.evaluateRule(instanceModel, path), where detect is method detectRule, newObject is instance and instanceModel+path are parameters
+            JSONObject evaluationResult = (JSONObject) evaluate.invoke(newObject, instanceModel); // equal to newObject.evaluateRule(instanceModel, path), where detect is method detectRule, newObject is instance and instanceModel+path are parameters
             return evaluationResult;
         } catch (Exception e) {
             e.printStackTrace();

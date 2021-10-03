@@ -19,17 +19,19 @@ public class InstanceModelAnnotator {
      */
     /* annotates a provided instance model with provided issue */
     public JSONObject annotateModel(JSONObject[] issues, JSONObject instanceModel) {
-        instanceModel.put("issues", issues[0]);
-        int keyctr = 1;
+        if (issues[0] != null) {
+            instanceModel.put("issues", issues[0]);
+        }
+        int keyctr = 1; // ensures unique issue ID in JSON
         for (int i = 1; i < issues.length; i++) {
-            String key = "";
-            Iterator<?> keys = issues[i].keySet().iterator();
-            while (keys.hasNext()) {
-                String currentKey = (String) keys.next();
-                instanceModel.getJSONObject("issues").put(currentKey + "-" + keyctr, issues[i].getJSONObject(currentKey));
-                keyctr++;
+            if (issues[i] != null) {
+                Iterator<?> keys = issues[i].keySet().iterator();
+                while (keys.hasNext()) {
+                    String currentKey = (String) keys.next();
+                    instanceModel.getJSONObject("issues").put(currentKey + "-" + keyctr, issues[i].getJSONObject(currentKey));
+                    keyctr++;
+                }
             }
-
         }
         JSONObject affectsRelationType = new JSONObject();
         affectsRelationType.put("extends", "null");
