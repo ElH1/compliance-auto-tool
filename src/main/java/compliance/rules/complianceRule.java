@@ -1,6 +1,5 @@
 package compliance.rules;
 
-import javassist.tools.rmi.ObjectNotFoundException;
 import org.json.JSONObject;
 
 interface complianceRule {

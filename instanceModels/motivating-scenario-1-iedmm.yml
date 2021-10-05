@@ -249,6 +249,12 @@ issue_types:
   compliance_issue:
     extends: base
 
+  IncorrectPropertyValue:
+    extends: compliance_issue
+
+  ConnectionIssue:
+    extends: compliance_issue
+
 
 ###############################################
 ## Issues
@@ -256,30 +262,26 @@ issue_types:
 
 issues:
 
-  IncorrectJavaRuntime:
-    ruleId: "CR3"
-    issueTitle: "IncorrectJavaRuntime"
+  IncorrectPropertyValue-1:
+    type: IncorrectPropertyValue
+    ruleId: "CR2"
     message: "Property 'Version' is not equal to 15*"
     relations:
       affects: PrivateInternalApp, Java-SE-internal
 
-  unencryptedCommunication:
-    ruleId: "CR10"
-    issueTitle: "unencryptedCommunication"
+  ConnectionIssue-1:
+    type: ConnectionIssue
+    ruleId: "CR5"
     message: "unencryptedCommunication=true"
     relations:
-      affects_component: UserDataTable, WebApp
+      affects_component: UserData, WebApp
       affects_relation: connects_to
 
-  unequalRegion:
+  IncorrectPropertyValue-2:
+    type: IncorrectPropertyValue
     ruleId: "CR1"
-    issueTitle: "unequalRegion"
-    message: "Database and WebApplication not in the same region"
+    message: "Database and WebApplication don't have same value for property region"
     relations:
       affects_component:
-        - UserDataTable
         - AmazonRDS
-        - WebApp
-        - Apache2
-        - WebAppServer
         - Instance2-WebApp

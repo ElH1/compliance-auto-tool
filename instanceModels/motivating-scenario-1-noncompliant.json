@@ -53,7 +53,7 @@
           "connects_to": "PrivateInternalApp"
         },
         {
-          "connects_to": "UserDataTable"
+          "connects_to": "UserData"
         }
       ]
     },
@@ -89,7 +89,7 @@
         "region": "us-east-2"
       }
     },
-    "UserDataTable": {
+    "UserData": {
       "type": "RelationalDB",
       "relations": [
         {
@@ -113,7 +113,7 @@
           "connects_to": "PrivateInternalApp"
         },
         {
-          "connects_to": "UserDataTable"
+          "connects_to": "UserData"
         }
       ]
     },

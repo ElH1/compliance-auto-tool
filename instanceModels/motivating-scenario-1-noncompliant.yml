@@ -37,7 +37,7 @@ components:
     relations:
       - hosted_on: Java-SE-support
       - connects_to: PrivateInternalApp
-      - connects_to: UserDataTable
+      - connects_to: UserData
 
   Java-SE-support:
     type: JavaRuntime
@@ -63,7 +63,7 @@ components:
       region: us-east-2
 
   ## second from right stack, database
-  UserDataTable:
+  UserData:
     type: RelationalDB
     relations:
       - hosted_on: AmazonRDS
@@ -78,7 +78,7 @@ components:
     type: WebApplication
     relations:
       - hosted_on: Apache2
-      - connects_to: UserDataTable
+      - connects_to: UserData
       - connects_to: PrivateInternalApp
 
   Apache2:

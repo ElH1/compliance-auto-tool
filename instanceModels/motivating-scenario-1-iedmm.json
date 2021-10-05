@@ -1,209 +1,335 @@
 {
-    "components": {
-        "SupportService": {
-            "type": "JavaApplication",
-            "relations": [
-                {"hosted_on": "Java-SE-support"},
-                {"connects_to": "PrivateInternalApp"},
-                {"connects_to": "UserDataTable"}
-            ]
-        },
-        "AmazonRDS": {
-            "type": "StorageService",
-            "properties": {"region": "us-west-2"}
-        },
-        "InternalAppServer": {
-            "type": "UnixOS",
-            "relations": [{"hosted_on": "PhysicalServer001"}],
-            "properties": {
-                "portForwarding": "enabled",
-                "frozen": "yes",
-                "distribution": "Ubuntu Server",
-                "version": 18.04,
-                "logRetentionPeriod": 50
-            }
-        },
-        "WebAppServer": {
-            "type": "UnixOS",
-            "relations": [{"hosted_on": "Instance2-WebApp"}],
-            "properties": {
-                "portForwarding": "disabled",
-                "distribution": "Ubuntu Server",
-                "version": 16.04,
-                "logRetentionPeriod": 90,
-                "OpenPorts": "22, 8080"
-            }
-        },
-        "Java-SE-internal": {
-            "type": "JavaRuntime",
-            "relations": [{"hosted_on": "InternalAppServer"}],
-            "properties": {"version": "16.0.2"}
-        },
-        "Instance1-JavaApp": {
-            "type": "AWSEC2",
-            "properties": {"region": "us-east-2"}
-        },
-        "PrivateInternalApp": {
-            "type": "JavaApplication",
-            "relations": [{"hosted_on": "Java-SE-internal"}],
-            "properties": {"isPrivate": "yes"}
-        },
-        "PhysicalServer001": {
-            "type": "compute",
-            "properties": {"network": "DMZ-nw-01"}
-        },
-        "Java-SE-support": {
-            "type": "JavaRuntime",
-            "relations": [{"hosted_on": "SupportServiceServer"}],
-            "properties": {"version": "16.0.2"}
-        },
-        "UserDataTable": {
-            "type": "RelationalDB",
-            "relations": [{"hosted_on": "AmazonRDS"}]
-        },
-        "Instance2-WebApp": {
-            "type": "AWSEC2",
-            "properties": {"region": "us-east-2"}
-        },
-        "SupportServiceServer": {
-            "type": "UnixOS",
-            "relations": [{"hosted_on": "Instance1-JavaApp"}],
-            "properties": {
-                "portForwarding": "disabled",
-                "frozen": "no",
-                "distribution": "Ubuntu Server",
-                "version": 20.04,
-                "logRetentionPeriod": 90
-            }
-        },
-        "Apache2": {
-            "type": "WebServer",
-            "relations": [{"hosted_on": "WebAppServer"}],
-            "properties": {
-                "servedPorts": 8080,
-                "443Usage": "SSL",
-                "ServerRootOwner": "WebserverUser",
-                "AccessToRestricted": "everyone"
-            }
-        },
-        "WebApp": {
-            "type": "WebApplication",
-            "relations": [
-                {"hosted_on": "Apache2"},
-                {"connects_to": "PrivateInternalApp"},
-                {"connects_to": "UserDataTable"}
-            ]
+  "components": {
+    "PrivateInternalApp": {
+      "type": "JavaApplication",
+      "relations": [
+        {
+          "hosted_on": "Java-SE-internal"
         }
+      ],
+      "properties": {
+        "isPrivate": "yes"
+      }
     },
-    "relation_types": {
-        "depends_on": {
-            "operations": {
-                "pre_configure_source": null,
-                "pre_configure_target": null,
-                "target_removed": null,
-                "post_configure_source": null,
-                "post_configure_target": null,
-                "target_changed": null
-            },
-            "extends": null,
-            "properties": {}
-        },
-        "affects": {
-            "extends": "null",
-            "properties": ""
-        },
-        "hosted_on": {"extends": "depends_on"},
-        "connects_to": {"extends": "depends_on"}
-    },
-    "issue_types": {
-        "base_issue": {
-            "extends": "null",
-            "properties": {
-                "ruleId": "string",
-                "message": "string"
-            }
-        },
-        "compliance_issue": {"extends": "base"}
-    },
-    "component_types": {
-        "JavaRuntime": {
-            "extends": "software_component",
-            "properties": {"version": {"type": "string"}}
-        },
-        "RelationalDB": {"extends": "database"},
-        "UnixOS": {
-            "extends": "compute",
-            "properties": {"os_family": {
-                "description": "Specifies the type of operating system",
-                "default_value": "linux",
-                "type": "string"
-            }}
-        },
-        "dbms": {
-            "extends": "software_component",
-            "properties": {
-                "port": {"type": "integer"},
-                "root_password": {"type": "string"}
-            }
-        },
-        "AWSEC2": {"extends": "compute"},
-        "StorageService": {
-            "extends": "dbms",
-            "properties": {"region": {"type": "string"}}
-        },
-        "compute": {
-            "extends": "base",
-            "properties": {"location": {
-                "description": "Specifies the physical location of compute resource",
-                "default_value": "unknown",
-                "type": "string"
-            }}
-        },
-        "database": {
-            "extends": "base",
-            "properties": {
-                "password": {"type": "string"},
-                "schema_name": {"type": "string"},
-                "user": {"type": "string"}
-            }
-        },
-        "WebServer": {
-            "extends": "software_component",
-            "properties": {"ServedPorts": {
-                "default_value": 80,
-                "type": "integer"
-            }}
-        },
-        "JavaApplication": {
-            "extends": "software_component",
-            "properties": {"type": {"type": "string"}}
-        },
-        "software_component": {"extends": "base"},
-        "WebApplication": {"extends": "base"},
-        "base": {
-            "metadata": {},
-            "operations": {
-                "stop": null,
-                "start": null,
-                "create": null,
-                "configure": null,
-                "delete": null
-            },
-            "extends": null,
-            "description": "The base type"
+    "Java-SE-internal": {
+      "type": "JavaRuntime",
+      "relations": [
+        {
+          "hosted_on": "InternalAppServer"
         }
+      ],
+      "properties": {
+        "version": "16.0.2"
+      }
     },
-    "issues": {"unequalRegion": {
-        "issueTitle": "unequalRegion",
-        "ruleId": "CR 1",
-        "message": "Database and WebApplication not in the same region",
-        "relations": {"affects": [
-            "UserDataTable",
-            "AmazonRDS",
-            "WebApp",
-            "Apache2",
-            "WebAppServer",
-            "Instance2-WebApp"
-        ]}
-    }}
+    "InternalAppServer": {
+      "type": "UnixOS",
+      "relations": [
+        {
+          "hosted_on": "PhysicalServer001"
+        }
+      ],
+      "properties": {
+        "distribution": "Ubuntu Server",
+        "version": 18.04,
+        "logRetentionPeriod": 50,
+        "portForwarding": "enabled",
+        "frozen": "yes"
+      }
+    },
+    "PhysicalServer001": {
+      "type": "compute",
+      "properties": {
+        "network": "DMZ-nw-01"
+      }
+    },
+    "SupportService": {
+      "type": "JavaApplication",
+      "relations": [
+        {
+          "hosted_on": "Java-SE-support"
+        },
+        {
+          "connects_to": "PrivateInternalApp"
+        },
+        {
+          "connects_to": "UserDataTable"
+        }
+      ]
+    },
+    "Java-SE-support": {
+      "type": "JavaRuntime",
+      "relations": [
+        {
+          "hosted_on": "SupportServiceServer"
+        }
+      ],
+      "properties": {
+        "version": "16.0.2"
+      }
+    },
+    "SupportServiceServer": {
+      "type": "UnixOS",
+      "relations": [
+        {
+          "hosted_on": "Instance1-JavaApp"
+        }
+      ],
+      "properties": {
+        "distribution": "Ubuntu Server",
+        "version": 20.04,
+        "logRetentionPeriod": 90,
+        "portForwarding": "disabled",
+        "frozen": "no"
+      }
+    },
+    "Instance1-JavaApp": {
+      "type": "AWSEC2",
+      "properties": {
+        "region": "us-east-2"
+      }
+    },
+    "UserDataTable": {
+      "type": "RelationalDB",
+      "relations": [
+        {
+          "hosted_on": "AmazonRDS"
+        }
+      ]
+    },
+    "AmazonRDS": {
+      "type": "StorageService",
+      "properties": {
+        "region": "us-west-2"
+      }
+    },
+    "WebApp": {
+      "type": "WebApplication",
+      "relations": [
+        {
+          "hosted_on": "Apache2"
+        },
+        {
+          "connects_to": "UserDataTable"
+        }
+      ]
+    },
+    "Apache2": {
+      "type": "WebServer",
+      "relations": [
+        {
+          "hosted_on": "WebAppServer"
+        }
+      ],
+      "properties": {
+        "servedPorts": 8080,
+        "443Usage": "SSL",
+        "AccessToRestricted": "everyone",
+        "ServerRootOwner": "WebserverUser"
+      }
+    },
+    "WebAppServer": {
+      "type": "UnixOS",
+      "relations": [
+        {
+          "hosted_on": "Instance2-WebApp"
+        }
+      ],
+      "properties": {
+        "distribution": "Ubuntu Server",
+        "version": 16.04,
+        "logRetentionPeriod": 90,
+        "portForwarding": "disabled",
+        "OpenPorts": "22, 8080"
+      }
+    },
+    "Instance2-WebApp": {
+      "type": "AWSEC2",
+      "properties": {
+        "region": "us-east-2"
+      }
+    }
+  },
+  "component_types": {
+    "base": {
+      "extends": null,
+      "description": "The base type",
+      "metadata": {},
+      "operations": {
+        "create": null,
+        "configure": null,
+        "start": null,
+        "stop": null,
+        "delete": null
+      }
+    },
+    "software_component": {
+      "extends": "base"
+    },
+    "compute": {
+      "extends": "base",
+      "properties": {
+        "location": {
+          "type": "string",
+          "description": "Specifies the physical location of compute resource",
+          "default_value": "unknown"
+        }
+      }
+    },
+    "WebServer": {
+      "extends": "software_component",
+      "properties": {
+        "ServedPorts": {
+          "type": "integer",
+          "default_value": 80
+        }
+      }
+    },
+    "WebApplication": {
+      "extends": "base"
+    },
+    "dbms": {
+      "extends": "software_component",
+      "properties": {
+        "port": {
+          "type": "integer"
+        },
+        "root_password": {
+          "type": "string"
+        }
+      }
+    },
+    "database": {
+      "extends": "base",
+      "properties": {
+        "schema_name": {
+          "type": "string"
+        },
+        "user": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        }
+      }
+    },
+    "RelationalDB": {
+      "extends": "database"
+    },
+    "StorageService": {
+      "extends": "dbms",
+      "properties": {
+        "region": {
+          "type": "string"
+        }
+      }
+    },
+    "AWSEC2": {
+      "extends": "compute"
+    },
+    "UnixOS": {
+      "extends": "compute",
+      "properties": {
+        "os_family": {
+          "type": "string",
+          "description": "Specifies the type of operating system",
+          "default_value": "linux"
+        }
+      }
+    },
+    "JavaApplication": {
+      "extends": "software_component",
+      "properties": {
+        "type": {
+          "type": "string"
+        }
+      }
+    },
+    "JavaRuntime": {
+      "extends": "software_component",
+      "properties": {
+        "version": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "relation_types": {
+    "depends_on": {
+      "extends": null,
+      "properties": {},
+      "operations": {
+        "pre_configure_source": null,
+        "pre_configure_target": null,
+        "post_configure_source": null,
+        "post_configure_target": null,
+        "target_changed": null,
+        "target_removed": null
+      }
+    },
+    "hosted_on": {
+      "extends": "depends_on"
+    },
+    "connects_to": {
+      "extends": "depends_on"
+    },
+    "affects": {
+      "extends": null,
+      "properties": {}
+    },
+    "affects_component": {
+      "extends": "affects"
+    },
+    "affects_relation": {
+      "extends": "affects"
+    }
+  },
+  "issue_types": {
+    "base_issue": {
+      "extends": null,
+      "properties": {
+        "ruleId": "string",
+        "message": "string"
+      }
+    },
+    "compliance_issue": {
+      "extends": "base"
+    },
+    "IncorrectPropertyValue": {
+      "extends": "compliance_issue"
+    },
+    "ConnectionIssue": {
+      "extends": "compliance_issue"
+    }
+  },
+  "issues": {
+    "IncorrectPropertyValue-1": {
+      "type": "IncorrectPropertyValue",
+      "ruleId": "CR2",
+      "message": "Property 'Version' is not equal to 15*",
+      "relations": {
+        "affects": "PrivateInternalApp, Java-SE-internal"
+      }
+    },
+    "ConnectionIssue-1": {
+      "type": "ConnectionIssue",
+      "ruleId": "CR5",
+      "message": "unencryptedCommunication=true",
+      "relations": {
+        "affects_component": "UserData, WebApp",
+        "affects_relation": "connects_to"
+      }
+    },
+    "IncorrectPropertyValue-2": {
+      "type": "IncorrectPropertyValue",
+      "ruleId": "CR1",
+      "message": "Database and WebApplication don't have same value for property region",
+      "relations": {
+        "affects_component": [
+          "AmazonRDS",
+          "Instance2-WebApp"
+        ]
+      }
+    }
+  }
 }

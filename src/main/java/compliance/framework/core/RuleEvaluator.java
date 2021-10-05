@@ -19,7 +19,7 @@ public class RuleEvaluator {
 
             /* get the provided rule's class and evaluation method */
             Class evaluator = Class.forName(classLocation);
-            System.out.println("evaluator.getName() = " + evaluator.getName());
+            // System.out.println("evaluator.getName() = " + evaluator.getName());
             Method evaluate = evaluator.getMethod("evaluateRule", argclassesDetector);
 
             /* create new instance of class */

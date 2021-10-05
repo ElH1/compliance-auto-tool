@@ -3,13 +3,9 @@
 
 package compliance.rules;
 
-import javassist.tools.rmi.ObjectNotFoundException;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.Iterator;
 
 
@@ -18,24 +14,6 @@ import java.util.Iterator;
  */
 /* this rule detects applicability of and evaluates CR 1 */
 public class exampleRule implements complianceRule {
-    public String instanceModelPath = "src/main/java/compliance/instanceModel/motivating-scenario-1-noncompliant.json";
-    public String iedmmPath = "src/main/java/compliance/instanceModel/";
-
-    /**
-     * @param Path
-     * @return
-     */
-    /* gets an instance model from a JSON file at a provided path */
-    public JSONObject getInstance(String Path) {
-        try {
-            String stringModel = new String(Files.readAllBytes(Paths.get(Path)));
-            return new JSONObject(stringModel);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return new JSONObject("Error", "Couldn't get instance model");
-        }
-    }
-
     /**
      * @param componentKey
      * @param components
@@ -65,7 +43,6 @@ public class exampleRule implements complianceRule {
     /**
      * @param instanceModel
      * @return
-     * @throws ObjectNotFoundException
      */
     /* detects whether evaluation for CR 1 has to be executed, i.e. if rule applies to instance model */
     public boolean detectRule(JSONObject instanceModel) {
@@ -88,8 +65,6 @@ public class exampleRule implements complianceRule {
                             String connectedComponentType = components.getJSONObject(connectedComponent).getString("type");
                             /* check whether the component that the WebApplication connects to is a database type component */
                             if (connectedComponentType.equals("RelationalDB") || connectedComponentType.equals("database")) {
-                                // dbKey = connectedComponent;
-                                // webAppKey = currentKey;
                                 status = true;
                             }
                         }
@@ -157,83 +132,21 @@ public class exampleRule implements complianceRule {
                 JSONArray affects_component = new JSONArray();
                 JSONObject compositeIssue = new JSONObject();
                 JSONObject affects = new JSONObject();
-                affects_component.put(webAppKey);
-                affects_component.put(dbKey);
-                // figure out how to dynamically capture and set the keys of affected components
+                // the two affected components are currently hard-coded! would require tracking in recursive method --> storage of the value in PRIOR execution
                 affects_component.put("AmazonRDS");
                 affects_component.put("Instance2-WebApp");
 
                 compositeIssue.put("ruleId", "CR 1");
-                compositeIssue.put("type", "incorrectProperty");
-                compositeIssue.put("message", "Database and WebApplication not in the same region");
+                compositeIssue.put("type", "IncorrectPropertyValue");
+                compositeIssue.put("message", "Database and WebApplication don't have the same value for property region");
                 affects.put("affects", affects_component);
                 compositeIssue.put("relations", affects);
-                issue.put("incorrectProperty-1", compositeIssue);
+                issue.put("incorrectProperty-2", compositeIssue);
                 return issue;
             }
         } catch (Exception e) {
             e.printStackTrace();
             throw e;
         }
-    }
-
-    /**
-     * @param issue
-     * @param instanceModel
-     * @return
-     */
-    /* annotates a provided instance model with provided issue */
-    public JSONObject annotateModel(JSONObject issue, JSONObject instanceModel) {
-        instanceModel.put("issues", issue);
-        JSONObject affectsRelationType = new JSONObject();
-        affectsRelationType.put("extends", "null");
-        affectsRelationType.put("properties", "");
-        instanceModel.getJSONObject("relation_types").put("affects", affectsRelationType);
-        JSONObject issueTypes = new JSONObject();
-        JSONObject baseIssue = new JSONObject();
-        JSONObject complianceIssue = new JSONObject();
-        JSONObject baseProperties = new JSONObject();
-        complianceIssue.put("extends", "base");
-        baseProperties.put("ruleId", "string");
-        baseProperties.put("message", "string");
-        baseIssue.put("extends", "null");
-        baseIssue.put("properties", baseProperties);
-        issueTypes.put("base_issue", baseIssue);
-        issueTypes.put("compliance_issue", complianceIssue);
-        instanceModel.put("issue_types", issueTypes);
-        return instanceModel;
-    }
-
-    /**
-     * @param contents
-     * @param path
-     * @param filename
-     * @param fileEnding
-     * @throws IOException
-     */
-    /* saves a JSON object to a file at a provided location*/
-    public void saveToFile(JSONObject contents, String path, String filename, String fileEnding) throws IOException {
-        try {
-            String destination = path + filename + fileEnding;
-            if (Files.notExists(Paths.get(destination))) {
-                Files.createFile(Paths.get(destination));
-                Files.write(Paths.get(destination), contents.toString(4).getBytes());
-            } else {
-                String newDestination = path + filename + fileEnding;
-                int ctr = 0;
-                while (!Files.notExists(Paths.get(newDestination))) {
-                    ++ctr;
-                    newDestination = path + filename + ctr + fileEnding;
-                }
-                Files.createFile(Paths.get(newDestination));
-                Files.write(Paths.get(newDestination), contents.toString(4).getBytes());
-                System.out.println("File already existed! Written to " + newDestination);
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new IOException("Something unexpected went wrong.");
-        }
-
     }
 }

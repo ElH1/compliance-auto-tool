@@ -11,6 +11,17 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/out/artifacts/compliance_automation_framework_jar/compliance-automation-framework.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$MODULE_DIR$/out/artifacts/compliance_automation_framework_jar/compliance-automation-framework.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
     <orderEntry type="library" name="Maven: com.github.UST-EDMM.edmm:edmm-core:v1.0.18" level="project" />
     <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:1.7.29" level="project" />
     <orderEntry type="library" name="Maven: org.projectlombok:lombok:1.18.10" level="project" />
@@ -88,16 +99,5 @@
     <orderEntry type="library" name="Maven: com.fasterxml.jackson.dataformat:jackson-dataformat-cbor:2.6.7" level="project" />
     <orderEntry type="library" name="Maven: com.amazonaws:jmespath-java:1.11.257" level="project" />
     <orderEntry type="library" name="Maven: org.json:json:20210307" level="project" />
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/out/artifacts/compliance_automation_framework_jar/compliance-automation-framework.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES>
-          <root url="jar://$MODULE_DIR$/out/artifacts/compliance_automation_framework_jar/compliance-automation-framework.jar!/" />
-        </SOURCES>
-      </library>
-    </orderEntry>
   </component>
 </module>

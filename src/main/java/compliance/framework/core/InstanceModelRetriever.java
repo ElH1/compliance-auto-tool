@@ -16,7 +16,7 @@ public class InstanceModelRetriever {
      * @return
      */
     /* gets an instance model from a JSON file at a provided path */
-    public JSONObject getInstance(String path) throws IOException {
+    public JSONObject retrieveInstance(String path) throws IOException {
         try {
             String stringModel = new String(Files.readAllBytes(Paths.get(path)));
             return new JSONObject(stringModel);

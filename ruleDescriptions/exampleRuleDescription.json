@@ -1,0 +1,5 @@
+{
+  "type": "programme",
+  "detector": "myOwnRules/",
+  "evaluator": "myOwnRules/"
+}
