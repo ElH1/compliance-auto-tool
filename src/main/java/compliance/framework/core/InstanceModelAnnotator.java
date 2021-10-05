@@ -49,16 +49,18 @@ public class InstanceModelAnnotator {
             }
             affectsRelationType.put("extends", "null");
             affectsRelationType.put("properties", "");
-            instanceModel.getJSONObject("relation_types").put("affects", affectsRelationType);
-            complianceIssue.put("extends", "base");
-            baseProperties.put("ruleId", "string");
-            baseProperties.put("message", "string");
-            baseIssue.put("extends", "null");
-            baseIssue.put("properties", baseProperties);
-            issueTypes.put("base_issue", baseIssue);
-            issueTypes.put("compliance_issue", complianceIssue);
-            // issueTypes.put("compliance_issue", complianceIssue);
-            instanceModel.put("issue_types", issueTypes);
+            if (instanceModel.has("relation_types")) {
+                instanceModel.getJSONObject("relation_types").put("affects", affectsRelationType);
+                complianceIssue.put("extends", "base");
+                baseProperties.put("ruleId", "string");
+                baseProperties.put("message", "string");
+                baseIssue.put("extends", "null");
+                baseIssue.put("properties", baseProperties);
+                issueTypes.put("base_issue", baseIssue);
+                issueTypes.put("compliance_issue", complianceIssue);
+                // issueTypes.put("compliance_issue", complianceIssue);
+                instanceModel.put("issue_types", issueTypes);
+            }
         }
         return instanceModel;
     }

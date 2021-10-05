@@ -22,7 +22,7 @@ public class InstanceModelRetriever {
             return new JSONObject(stringModel);
         } catch (IOException e) {
             e.printStackTrace();
-            throw e;
+            throw (e);
         }
     }
 
