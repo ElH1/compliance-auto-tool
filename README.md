@@ -40,7 +40,7 @@ The resulting I-EDMM will be placed in the same location as the initial instance
 
 ### A working example
 Executed from the `./portable/` folder, and using the currently existent example rule description, as
-well as the existing example rule, can be executed using this command:
+well as the existing example rule definition, can be executed using this command:
 
 ```
 java -cp "out.jar;json-20210307.jar;." \
