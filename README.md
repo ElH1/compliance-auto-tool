@@ -26,8 +26,8 @@ An already packaged, portable version of the prototype is available in the `port
   definitions. This lib folder also requires a copy of the framework jar! So for the running example, the `lib` folder
   must include a) the json jar and b) the `out.jar` framework archive.
 
-IMPORTANT: the directory the rule description points to must contain nothing other than the rules which should be
-evaluated! Otherwise, the framework will run into errors.
+IMPORTANT: the directory the rule description points to must contain no files other than the rules which should be
+evaluated! Otherwise, the framework will run into errors. It can contain any directories, but everything in this folder will be copied during execution.
 
 #### Execution
 
