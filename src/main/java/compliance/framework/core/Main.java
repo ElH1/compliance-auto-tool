@@ -15,6 +15,7 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class Main {
@@ -39,6 +40,13 @@ public class Main {
 
         try {
             if (ruleType.equals("programme")) {
+                Path comp = Paths.get("compliance");
+                if (!Files.exists(comp)) {
+                    ProcessBuilder makeDirProc = new ProcessBuilder();
+                    makeDirProc.command("bash", "-c", "mkdir compliance ; cd compliance ; mkdir rules ; cd ../");
+                    Process mkdir = makeDirProc.start();
+                    mkdir.waitFor();
+                }
                 /* copy all detector files from source to path required by framework */
                 ProcessBuilder copyProcess = new ProcessBuilder();
                 copyProcess.command("cp", "-RT", ruleLocationDetector, "compliance/rules/");

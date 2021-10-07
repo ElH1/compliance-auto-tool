@@ -77,6 +77,7 @@ public class InstanceModelAnnotator {
             if (Files.notExists(Paths.get(destination))) {
                 Files.createFile(Paths.get(destination));
                 Files.write(Paths.get(destination), contents.toString(4).getBytes());
+                System.out.println("I-EDMM written to " + destination);
             } else {
                 String newDestination = file + fileEnding;
                 int ctr = 0;
@@ -86,7 +87,7 @@ public class InstanceModelAnnotator {
                 }
                 Files.createFile(Paths.get(newDestination));
                 Files.write(Paths.get(newDestination), contents.toString(4).getBytes());
-                System.out.println("File already existed! Written to " + newDestination);
+                System.out.println("File already existed! I-EDMM written to " + newDestination);
             }
 
         } catch (Exception e) {
