@@ -30,6 +30,7 @@ An already packaged, portable version of the prototype is available in the `port
 
 Execute using `java -cp "out.jar;json-20210307.jar;." compliance.framework.core.Main "PATH/TO/INSTANCEMODEL.JSON" "PATH/TO/RULEDESCRIPTION.JSON"`
 from the location where you have stored the portable folder.
+If using a UNIX-based system instead of Windows, replace the ; separator in the values for -cp by : as a separator.
 
 The resulting I-EDMM will be placed in the same location as the initial instance model.
 
