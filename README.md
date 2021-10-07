@@ -28,17 +28,37 @@ An already packaged, portable version of the prototype is available in the `port
 
 #### Execution
 
-Execute
-using `java -cp "out.jar;json-20210307.jar;." compliance.framework.core.Main "PATH/TO/INSTANCEMODEL.JSON" "PATH/TO/RULEDESCRIPTION.JSON"`
+Execute using `java -cp "out.jar;json-20210307.jar;." compliance.framework.core.Main "PATH/TO/INSTANCEMODEL.JSON" "PATH/TO/RULEDESCRIPTION.JSON"`
 from the location where you have stored the portable folder.
 
 The resulting I-EDMM will be placed in the same location as the initial instance model.
 
-# Packaging compiled code
+# For further development:
+
+## Compiling
+
+The project in this repository is an IntelliJ IDEA project that uses Maven to manage dependencies. It can be loaded into an IDE and compiled from there. For example this works in IntelliJ IDEA (https://www.jetbrains.com/idea/) or Eclipse (https://www.eclipse.org/downloads/), both of which are freely available IDEs. For Eclipse, it is recommended to unpackage the zip file before opening it in Eclipse, as the zip contains an extra folder level (`masterthesis-prototype-master\masterthesis-prototype-master`), which Eclipse handles incorrectly when loading the project directly as a zip archive.
+
+As an alternative that doesn't require an IDE, compilation can be done using Ant (https://ant.apache.org/bindownload.cgi). To achieve this, add the following as a build.xml in the project root:
+```
+<project default="compile">
+    <target name="compile">
+        <mkdir dir="bin"/>
+        <javac srcdir="src/main" destdir="bin">
+	    <classpath>
+  	        <pathelement location="portable/json-20210307.jar"/>
+	    </classpath>
+	</javac>
+    </target>
+</project>
+```
+Then build using `ant info` (assuming ant is installed and available as a command).
+
+## Packaging compiled code
 
 Should you wish to package the jar yourself, use the following
 command: `jar cf out.jar ./compliance ./META-INF edmm-core-v1.0.18.jar json-20210307.jar
-` from where your `.class` files are stored after having built the source code. For example, if using IntelliJ, that may
+` from where your compiled `.class` files are stored after having built the source code. For example, if using IntelliJ, that may
 be the directory `compliance-automation-framework/target/classes`. Note that the `edmm-core-v1.0.18.jar` file is
 additionally required for this step. It is also made available at the top level of this project.
 
