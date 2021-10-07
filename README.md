@@ -24,7 +24,7 @@ An already packaged, portable version of the prototype is available in the `port
 - Rule definitions implementing the interface `complianceRule.java` under `src/main/java/compliance/rules` in a
   directory that the rule description points to. These definitions must all start with `package compliance.rules;`
 - Any dependencies the rule definitions require must be included in a `lib` folder at the same location as the rule
-  definitions.
+  definitions. This lib folder also requires a copy of the framework jar! So for the running example, the `lib` folder must include a) the json jar and b) the `out.jar` framework jar.
 
 #### Execution
 
@@ -60,8 +60,7 @@ Then build using `ant info` (assuming ant is installed and available as a comman
 Should you wish to package the jar yourself, use the following
 command: `jar cf out.jar ./compliance ./META-INF edmm-core-v1.0.18.jar json-20210307.jar
 ` from where your compiled `.class` files are stored after having built the source code. For example, if using IntelliJ, that may
-be the directory `compliance-automation-framework/target/classes`. Note that the `edmm-core-v1.0.18.jar` file is
-additionally required for this step. It is also made available at the top level of this project.
+be the directory `compliance-automation-framework/target/classes`. Note that the `edmm-core-v1.0.18.jar` file, as well as `json-20210307.jar` are required in the current directory for this step. These are made available at the top level of the project and in the portable folder.
 
 # Project Structure
 
