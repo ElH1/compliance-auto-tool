@@ -38,7 +38,7 @@ the ; separator in the values for -cp by : as a separator.
 
 The resulting I-EDMM will be placed in the same location as the initial instance model.
 
-*A working example*, executed from the `./portable/` folder, and using the currently existent example rule description, as
+**A working example**, executed from the `./portable/` folder, and using the currently existent example rule description, as
 well as an example rule, can be executed using this command:
 
 ```
